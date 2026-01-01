@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.model;
 
 import jakarta.validation.constraints.NotBlank;
+import ru.practicum.shareit.request.model.ItemRequest;
 import lombok.*;
 
 @Builder(toBuilder = true)
@@ -17,5 +18,5 @@ public class Item {
     ItemStatus available;
     @NotBlank(message = "Имя владельца должно быть указано.")
     String owner;
-    Long request;
+    ItemRequest request;
 }
