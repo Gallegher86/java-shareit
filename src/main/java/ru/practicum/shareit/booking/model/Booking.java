@@ -15,19 +15,19 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode(of = {"id"})
 public class Booking {
-    Long id;
+    private Long id;
     @NotNull
     @Future
-    LocalDateTime start;
+    private LocalDateTime start;
     @NotNull
     @Future
-    LocalDateTime end;
+    private LocalDateTime end;
     @NotNull
     @Valid
-    Item item;
+    private Item item;
     @NotNull
     @Valid
-    User booker;
+    private User booker;
     @Builder.Default
-    BookingStatus status = BookingStatus.WAITING;
+    private BookingStatus status = BookingStatus.WAITING;
 }

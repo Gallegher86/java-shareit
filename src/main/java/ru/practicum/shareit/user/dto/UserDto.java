@@ -10,10 +10,10 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode(of = {"id"})
 public class UserDto {
-    Long id;
+    private Long id;
     @NotBlank(message = "Имя/логин пользователя должны быть указаны.")
-    String name;
+    private String name;
     @NotBlank(message = "Электронный адрес пользователя не может быть пустым.")
     @Email(message = "Электронный адрес пользователя должен содержать символ @ и быть корректным.")
-    String email;
+    private String email;
 }

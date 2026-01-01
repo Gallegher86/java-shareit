@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode(of = {"id"})
 public class ItemRequest {
-    Long id;
-    String description;
+    private Long id;
+    private String description;
     @NotNull
     @Valid
-    User requestor;
+    private User requestor;
     @NotNull
     @PastOrPresent
-    LocalDateTime created;
+    private LocalDateTime created;
 }

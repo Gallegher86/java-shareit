@@ -13,14 +13,14 @@ import ru.practicum.shareit.user.model.User;
 @ToString
 @EqualsAndHashCode(of = {"id"})
 public class Item {
-    Long id;
+    private Long id;
     @NotBlank(message = "Название вещи не должно быть пустым.")
-    String name;
-    String description;
+    private String name;
+    private String description;
     @Builder.Default
-    ItemStatus available = ItemStatus.AVAILABLE;
+    private ItemStatus available = ItemStatus.AVAILABLE;
     @NotNull
     @Valid
-    User owner;
-    ItemRequest request;
+    private User owner;
+    private ItemRequest request;
 }

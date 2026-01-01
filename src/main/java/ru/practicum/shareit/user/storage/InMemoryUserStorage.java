@@ -20,7 +20,6 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User create(User user) {
         long id = generateNextId();
-        log.trace("Сгенерирован новый id для пользователя {}", id);
         user.setId(id);
         users.put(id, user);
         log.trace("Пользователь с именем/логином {} с id {} добавлен в список.", user.getName(), user.getId());
@@ -30,7 +29,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User update(User user) {
         users.put(user.getId(), user);
-        log.trace("Пользователь с именем/логином {} с id {} сохранен.", user.getName(), user.getId());
+        log.trace("Пользователь с именем/логином {} с id {} обновлен.", user.getName(), user.getId());
         return user;
     }
 
@@ -43,7 +42,6 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void delete(Long id) {
         users.remove(id);
-        log.trace("Пользователь с id {} удален.", id);
     }
 
     @Override
