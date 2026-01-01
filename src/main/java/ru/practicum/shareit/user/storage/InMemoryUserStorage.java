@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -15,12 +13,17 @@ public class InMemoryUserStorage implements UserStorage {
     private Long idCounter = 1L;
 
     @Override
+    public List<User> findAll() {
+        return new ArrayList<>(users.values());
+    }
+
+    @Override
     public User create(User user) {
         long id = generateNextId();
         log.trace("Сгенерирован новый id для пользователя {}", id);
         user.setId(id);
         users.put(id, user);
-        log.info("Пользователь с именем/логином {} с id {} добавлен в список.", user.getName(), user.getId());
+        log.trace("Пользователь с именем/логином {} с id {} добавлен в список.", user.getName(), user.getId());
         return user;
     }
 
