@@ -17,8 +17,7 @@ public class Item {
     @NotBlank(message = "Название вещи не должно быть пустым.")
     private String name;
     private String description;
-    @Builder.Default
-    private ItemStatus available = ItemStatus.AVAILABLE;
+    private Boolean available;
     @NotNull
     @Valid
     private User owner;
