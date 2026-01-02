@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Пользователь с id %d не найден.", id)));
 
-        log.info("Пользователь с id {} выдан.", id);
+        log.info("Пользователь с id {} найден.", id);
         return user;
     }
 
