@@ -7,13 +7,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ItemStorage {
-    List<Item> findAll();
+    List<Long> getItemIdsByOwner(Long userId);
 
     Item create(User owner, Item item);
 
-    Item update (Item item);
+    Item update(Item item);
 
     Optional<Item> findById(Long id);
+
+    List<Item> findOwnersItems(Long userId);
+
+    List<Item> findByDescription(String description);
 
     boolean existsById(Long id);
 }

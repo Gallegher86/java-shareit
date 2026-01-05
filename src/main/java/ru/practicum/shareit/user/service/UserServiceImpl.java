@@ -25,13 +25,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(User updatedUser) {
         Long id = updatedUser.getId();
-        validateUserId(id);
+        User inMemoryUser = findById(id);
 
         if (updatedUser.getEmail() != null) {
             validateEmail(updatedUser.getEmail());
         }
-
-        User inMemoryUser = userStorage.findById(id).orElseThrow();
 
         if (updatedUser.getName() != null && !updatedUser.getName().isBlank()) {
             inMemoryUser.setName(updatedUser.getName());
@@ -42,7 +40,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userStorage.update(inMemoryUser);
-        log.info("Обновленный пользователь с с именем/логином {} с id {} добавлен в список.",
+        log.info("Обновленный пользователь с именем/логином {} с id {} добавлен в список.",
                 user.getName(), user.getId());
         return user;
     }

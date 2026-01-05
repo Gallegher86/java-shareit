@@ -9,14 +9,14 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class InMemoryItemStorage implements ItemStorage{
+public class InMemoryItemStorage implements ItemStorage {
     private final Map<Long, Item> items = new HashMap<>();
     private final Map<Long, Set<Long>> itemsByOwner = new HashMap<>();
     private Long idCounter = 1L;
 
     @Override
-    public List<Item> findAll() {
-        return new ArrayList<>(items.values());
+    public List<Long> getItemIdsByOwner(Long userId) {
+        return new ArrayList<>(itemsByOwner.get(userId));
     }
 
     @Override
@@ -45,6 +45,27 @@ public class InMemoryItemStorage implements ItemStorage{
     public Optional<Item> findById(Long id) {
         Item item = items.get(id);
         return Optional.ofNullable(item);
+    }
+
+    @Override
+    public List<Item> findOwnersItems(Long userId) {
+        Set<Long> itemIds = itemsByOwner.get(userId);
+
+        return itemIds.stream()
+                .map(items::get)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    @Override
+    public List<Item> findByDescription(String description) {
+        String search = description.toLowerCase();
+
+        return items.values().stream()
+                .filter(item -> (item.getName().toLowerCase().contains(search)) ||
+                        (item.getDescription().toLowerCase().contains(search)))
+                .filter(Item::getAvailable)
+                .toList();
     }
 
     @Override

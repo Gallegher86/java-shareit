@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exceptions.EmailAlreadyUsedException;
+import ru.practicum.shareit.exceptions.ItemDontBelongToUserException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 
 import java.util.List;
@@ -38,6 +40,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
+    @ExceptionHandler(ItemDontBelongToUserException.class)
+    public ResponseEntity<ErrorResponse> handleItemDontBelongToUserException(ItemDontBelongToUserException ex) {
+        log.warn(ex.getMessage());
+
+        ErrorResponse body = ErrorResponse.builder()
+                .errorMessage(ex.getMessage())
+                .errorCode(HttpStatus.CONFLICT.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleInvalidArgumentException(MethodArgumentNotValidException ex) {
         String errorMessage = "Выявлены ошибки валидации.";
@@ -54,6 +68,19 @@ public class GlobalExceptionHandler {
                 .errorMessage(errorMessage)
                 .errorCode(HttpStatus.BAD_REQUEST.value())
                 .details(errors)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ErrorResponse> handleMissingRequestedHeaderException(MissingRequestHeaderException ex) {
+        String message = "В запросе отсутствует требуемый заголовок X-Sharer-User-Id.";
+        log.warn(message);
+
+        ErrorResponse body = ErrorResponse.builder()
+                .errorMessage(message)
+                .errorCode(HttpStatus.BAD_REQUEST.value())
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
