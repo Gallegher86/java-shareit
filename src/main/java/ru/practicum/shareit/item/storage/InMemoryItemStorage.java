@@ -16,7 +16,7 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public List<Long> getItemIdsByOwner(Long userId) {
-        return new ArrayList<>(itemsByOwner.get(userId));
+        return new ArrayList<>(itemsByOwner.getOrDefault(userId, Collections.emptySet()));
     }
 
     @Override
@@ -49,9 +49,8 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public List<Item> findOwnersItems(Long userId) {
-        Set<Long> itemIds = itemsByOwner.get(userId);
-
-        return itemIds.stream()
+        return itemsByOwner.getOrDefault(userId, Collections.emptySet())
+                .stream()
                 .map(items::get)
                 .filter(Objects::nonNull)
                 .toList();
