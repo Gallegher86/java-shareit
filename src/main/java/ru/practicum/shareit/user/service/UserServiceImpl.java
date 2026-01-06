@@ -8,6 +8,8 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
+import java.util.Objects;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -16,7 +18,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(User newUser) {
-        validateEmail(newUser.getEmail());
+        validateEmail(newUser.getEmail(), null);
         User user = userStorage.create(newUser);
         log.info("Пользователь с именем/логином {} с id {} добавлен в список.", user.getName(), user.getId());
         return user;
@@ -28,7 +30,7 @@ public class UserServiceImpl implements UserService {
         User inMemoryUser = findById(id);
 
         if (updatedUser.getEmail() != null) {
-            validateEmail(updatedUser.getEmail());
+            validateEmail(updatedUser.getEmail(), id);
         }
 
         if (updatedUser.getName() != null && !updatedUser.getName().isBlank()) {
@@ -70,10 +72,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void validateEmail(String email) {
+    private void validateEmail(String email, Long id) {
         boolean exists = userStorage.findAll().stream()
-                .map(User::getEmail)
-                .anyMatch(email::equals);
+                .anyMatch(u ->
+                        u.getEmail().equals(email) &&
+                                (!Objects.equals(u.getId(), id)));
 
         if (exists) {
             String errorMessage = String.format("Электронный адрес %s уже есть в базе данных", email);
