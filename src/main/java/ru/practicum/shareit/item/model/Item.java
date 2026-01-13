@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.model;
 
+import jakarta.persistence.*;
 import ru.practicum.shareit.request.model.ItemRequest;
 import lombok.*;
 import ru.practicum.shareit.user.model.User;
