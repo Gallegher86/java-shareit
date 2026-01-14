@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.service;
+package ru.practicum.shareit.user;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.EmailAlreadyUsedException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserRepository;
 
 @Slf4j
 @Service

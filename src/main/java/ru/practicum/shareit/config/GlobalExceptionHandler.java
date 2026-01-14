@@ -12,6 +12,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import ru.practicum.shareit.exceptions.EmailAlreadyUsedException;
 import ru.practicum.shareit.exceptions.ItemDontBelongToUserException;
+import ru.practicum.shareit.exceptions.ItemUnavailableException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 
 import java.util.List;
@@ -53,6 +54,18 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
+    @ExceptionHandler(ItemUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handleItemUnavailableException(ItemUnavailableException ex) {
+        log.warn(ex.getMessage());
+
+        ErrorResponse body = ErrorResponse.builder()
+                .errorMessage(ex.getMessage())
+                .errorCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
