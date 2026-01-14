@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
             log.info("Данные пользователя с именем/логином {} с id {} обновлены.",
                     user.getName(), user.getId());
         } else {
-            log.info("Получен запрос пользователя с именем/логином {} с id {} на обновление, но данных не было.",
+            log.info("Получен запрос пользователя с именем/логином {} с id {} на обновление, но обновления отсутствуют.",
                     user.getName(), user.getId());
         }
         return user;

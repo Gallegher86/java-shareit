@@ -3,10 +3,11 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.ItemDontBelongToUserException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -16,50 +17,60 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final ItemStorage itemStorage;
     private final UserService userService;
+    private final ItemRepository itemRepository;
 
     @Override
+    @Transactional
     public Item create(Long userId, Item newItem) {
         User owner = userService.findById(userId);
-        Item item = itemStorage.create(owner, newItem);
+        newItem.setOwner(owner);
+        Item item = itemRepository.save(newItem);
         log.info("Вещь {} с id {} добавлена в список.", item.getName(), item.getId());
         return item;
     }
 
     @Override
+    @Transactional
     public Item update(Long userId, Item updatedItem) {
         Long id = updatedItem.getId();
-        Item inMemoryItem = findById(userId, id);
+        Item item = findById(userId, id);
+        boolean changed = false;
 
-        if (!itemStorage.getItemIdsByOwner(userId).contains(id)) {
+        if (!item.getOwner().getId().equals(userId)) {
             throw new ItemDontBelongToUserException(
                     String.format("Вещь с id %d не принадлежит пользователю с userId %d.", id, userId));
         }
 
         if (updatedItem.getName() != null && !updatedItem.getName().isBlank()) {
-            inMemoryItem.setName(updatedItem.getName());
+            item.setName(updatedItem.getName());
+            changed = true;
         }
 
         if (updatedItem.getDescription() != null && !updatedItem.getDescription().isBlank()) {
-            inMemoryItem.setDescription(updatedItem.getDescription());
+            item.setDescription(updatedItem.getDescription());
+            changed = true;
         }
 
         if (updatedItem.getAvailable() != null) {
-            inMemoryItem.setAvailable(updatedItem.getAvailable());
+            item.setAvailable(updatedItem.getAvailable());
+            changed = true;
         }
 
-        Item item = itemStorage.update(inMemoryItem);
-        log.info("Обновленная вещь {} с id {} добавлена в список.",
-                item.getName(), id);
+        if (changed) {
+            log.info("Данные вещи {} с id {} обновлены.", item.getName(), id);
+        } else {
+            log.info("Получен запрос на обновление вещи с id {}, но обновления отсутствуют.", id);
+        }
         return item;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Item findById(Long userId, Long id) {
         userService.validateUserId(userId);
 
-        Item item = itemStorage.findById(id)
+        Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Вещь с id %d не найдена.", id)));
 
@@ -68,9 +79,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Item> findOwnersItems(Long userId) {
         userService.validateUserId(userId);
-        return itemStorage.findOwnersItems(userId);
+        return itemRepository.findAllByOwnerId(userId);
     }
 
     @Override
@@ -81,11 +93,11 @@ public class ItemServiceImpl implements ItemService {
             return List.of();
         }
 
-        return itemStorage.findByDescription(description);
+        return itemRepository.findByDescription(description);
     }
 
     private void validateItemId(Long id) {
-        if (!itemStorage.existsById(id)) {
+        if (!itemRepository.existsById(id)) {
             String errorMessage = String.format("Вещь с id %d не найдена.", id);
             throw new NotFoundException(errorMessage);
         }
