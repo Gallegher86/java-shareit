@@ -85,6 +85,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Item> findByDescription(Long userId, String description) {
         userService.validateUserId(userId);
 

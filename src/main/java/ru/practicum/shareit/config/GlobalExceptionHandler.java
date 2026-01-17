@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import ru.practicum.shareit.exceptions.EmailAlreadyUsedException;
-import ru.practicum.shareit.exceptions.ItemDontBelongToUserException;
-import ru.practicum.shareit.exceptions.ItemUnavailableException;
-import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.*;
 
 import java.util.List;
 
@@ -58,6 +55,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ItemUnavailableException.class)
     public ResponseEntity<ErrorResponse> handleItemUnavailableException(ItemUnavailableException ex) {
+        log.warn(ex.getMessage());
+
+        ErrorResponse body = ErrorResponse.builder()
+                .errorMessage(ex.getMessage())
+                .errorCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(BookingProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleBookingApproving(BookingProcessingException ex) {
         log.warn(ex.getMessage());
 
         ErrorResponse body = ErrorResponse.builder()
