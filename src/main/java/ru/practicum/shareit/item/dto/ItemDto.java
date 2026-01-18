@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
+import ru.practicum.shareit.booking.model.Booking;
+
+import java.time.LocalDateTime;
 
 @Builder(toBuilder = true)
 @Getter
@@ -20,4 +23,6 @@ public class ItemDto {
     private String description;
     @NotNull(message = "У вещи должна быть указана доступность.")
     private Boolean available;
+    private LocalDateTime lastBooking;
+    private LocalDateTime nextBooking;
 }

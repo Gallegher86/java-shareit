@@ -4,13 +4,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.ItemDontBelongToUserException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserService;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -18,6 +25,7 @@ import java.util.List;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
+    private final BookingRepository bookingRepository;
 
     @Override
     @Transactional
@@ -79,9 +87,31 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Item> findOwnersItems(Long userId) {
+    public List<ItemDto> findOwnersItems(Long userId) {
         userService.validateUserId(userId);
-        return itemRepository.findAllByOwnerId(userId);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Item> items = itemRepository.findAllByOwnerId(userId);
+        List<Long> itemIds = items.stream().map(Item::getId).toList();
+        List<Booking> lastBookings = bookingRepository.findItemsLastBookings(itemIds, now);
+        List<Booking> nextBookings = bookingRepository.findItemsNextBookings(itemIds, now);
+
+        Map<Long, Booking> lastBookingMap = lastBookings.stream()
+                .collect(Collectors.toMap(
+                        b -> b.getItem().getId(),
+                        b -> b,
+                        (existing, ignored) -> existing
+                ));
+
+        Map<Long, Booking> nextBookingMap = nextBookings.stream()
+                .collect(Collectors.toMap(
+                        b -> b.getItem().getId(),
+                        b -> b,
+                        (existing, ignored) -> existing
+                ));
+
+        return ItemMapper.toItemsDto(items, lastBookingMap, nextBookingMap);
     }
 
     @Override
@@ -94,12 +124,5 @@ public class ItemServiceImpl implements ItemService {
         }
 
         return itemRepository.findByDescription(description);
-    }
-
-    private void validateItemId(Long id) {
-        if (!itemRepository.existsById(id)) {
-            String errorMessage = String.format("Вещь с id %d не найдена.", id);
-            throw new NotFoundException(errorMessage);
-        }
     }
 }

@@ -46,7 +46,7 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> findOwnersItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("От пользователя с userId {} получен запрос на получение списка его вещей.", userId);
-        return itemService.findOwnersItems(userId).stream().map(ItemMapper::toItemDto).toList();
+        return itemService.findOwnersItems(userId);
     }
 
     @GetMapping("/search")
