@@ -66,7 +66,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BookingProcessingException.class)
-    public ResponseEntity<ErrorResponse> handleBookingApproving(BookingProcessingException ex) {
+    public ResponseEntity<ErrorResponse> handleBookingProcessingException(BookingProcessingException ex) {
+        log.warn(ex.getMessage());
+
+        ErrorResponse body = ErrorResponse.builder()
+                .errorMessage(ex.getMessage())
+                .errorCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(CommentProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleCommentProcessingException(CommentProcessingException ex) {
         log.warn(ex.getMessage());
 
         ErrorResponse body = ErrorResponse.builder()

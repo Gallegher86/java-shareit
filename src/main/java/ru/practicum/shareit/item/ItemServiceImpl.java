@@ -6,10 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.exceptions.CommentProcessingException;
 import ru.practicum.shareit.exceptions.ItemDontBelongToUserException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.item.dto.CommentRequestDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserService;
@@ -26,6 +30,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -124,5 +129,43 @@ public class ItemServiceImpl implements ItemService {
         }
 
         return itemRepository.findByDescription(description);
+    }
+
+    @Override
+    @Transactional
+    public Comment createComment(Long userId, Long itemId, CommentRequestDto dto) {
+        userService.validateUserId(userId);
+        validateItemId(itemId);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        Booking booking = bookingRepository
+                .findByBookerIdAndItemId(userId, itemId)
+                .orElseThrow(() -> new CommentProcessingException(
+                        String.format("Пользователь с userId %d не бронировал вещь с itemId %d.", userId, itemId)
+                ));
+
+        if (booking.getStatus() != BookingStatus.APPROVED ||
+                booking.getEnd().isAfter(now)) {
+            throw new CommentProcessingException(
+                    "Комментарий можно оставить только после завершённого бронирования.");
+        }
+
+        Comment comment = Comment.builder()
+                .text(dto.getText())
+                .item(booking.getItem())
+                .author(booking.getBooker())
+                .created(now)
+                .build();
+
+        return commentRepository.save(comment);
+    }
+
+    @Override
+    public void validateItemId(Long id) {
+        if (!itemRepository.existsById(id)) {
+            String errorMessage = String.format("Вещь с id %d не найдена.", id);
+            throw new NotFoundException(errorMessage);
+        }
     }
 }

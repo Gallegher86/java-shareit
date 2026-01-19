@@ -4,8 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentRequestDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.UpdatedItemDto;
+import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 
@@ -53,5 +56,12 @@ public class ItemController {
     public List<ItemDto> findByDescription(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestParam String text) {
         log.info("От пользователя с userId {} получен запрос на получение списка вещей по описанию.", userId);
         return itemService.findByDescription(userId, text).stream().map(ItemMapper::toItemDto).toList();
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto postComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long itemId,
+                                  @RequestBody CommentRequestDto dto) {
+        log.info("От пользователя с userId {} получен комментарий.", userId);
+        return CommentMapper.toCommentDto(itemService.createComment(userId, itemId, dto));
     }
 }

@@ -89,5 +89,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "and b.start > :now " +
             "order by b.end desc")
     List<Booking> findItemsNextBookings(@Param("itemIds") List<Long> itemIds, @Param("now") LocalDateTime now);
+
+    Optional<Booking> findByBookerIdAndItemId(Long bookerId, Long itemId);
 }
 
