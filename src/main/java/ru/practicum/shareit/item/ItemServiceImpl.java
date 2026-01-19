@@ -10,8 +10,10 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.CommentProcessingException;
 import ru.practicum.shareit.exceptions.ItemDontBelongToUserException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentRequestDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -162,7 +164,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void validateItemId(Long id) {
+    public List<Comment> getItemComments (Long itemId) {
+        validateItemId(itemId);
+        return commentRepository.findByItem_Id(itemId);
+    }
+
+    private List<Comment> getUserComment(Long userId) {
+        userService.validateUserId(userId);
+        List<Long> itemIds = itemRepository.findAllByOwnerId(userId).stream().map(Item::getId).toList();
+
+        return commentRepository.findByItem_IdIn(itemIds);
+    }
+
+    private void validateItemId(Long id) {
         if (!itemRepository.existsById(id)) {
             String errorMessage = String.format("Вещь с id %d не найдена.", id);
             throw new NotFoundException(errorMessage);

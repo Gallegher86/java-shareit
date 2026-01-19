@@ -43,7 +43,13 @@ public class ItemController {
     public ItemDto findById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long id) {
         log.info("От пользователя с userId {} получен запрос на получение вещи с id {}.", userId, id);
         Item item = itemService.findById(userId, id);
-        return ItemMapper.toItemDto(item);
+
+        List<CommentDto> comments = itemService.getItemComments(id)
+                .stream().map(CommentMapper::toCommentDto).toList();
+        ItemDto itemDto = ItemMapper.toItemDto(item);
+        itemDto.setComments(comments);
+
+        return itemDto;
     }
 
     @GetMapping

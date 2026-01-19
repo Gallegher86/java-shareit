@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder(toBuilder = true)
 @Getter
@@ -24,4 +25,5 @@ public class ItemDto {
     private Boolean available;
     private LocalDateTime lastBooking;
     private LocalDateTime nextBooking;
+    List<CommentDto> comments;
 }
