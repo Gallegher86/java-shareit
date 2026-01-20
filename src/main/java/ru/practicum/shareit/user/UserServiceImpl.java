@@ -68,7 +68,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void delete(Long id) {
-        try { userRepository.deleteById(id);
+        try {
+            userRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(String.format("Пользователь с id %d не найден.", id));
         }

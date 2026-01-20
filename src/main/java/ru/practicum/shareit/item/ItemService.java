@@ -20,5 +20,5 @@ public interface ItemService {
 
     Comment createComment(Long userId, Long itemId, CommentRequestDto dto);
 
-    List<Comment> getItemComments (Long itemId);
+    List<Comment> getItemComments(Long itemId);
 }

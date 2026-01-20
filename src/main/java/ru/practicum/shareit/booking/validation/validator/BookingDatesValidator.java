@@ -5,8 +5,6 @@ import jakarta.validation.ConstraintValidatorContext;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.validation.annotation.ValidBookingDates;
 
-import java.time.LocalDate;
-
 public class BookingDatesValidator implements ConstraintValidator<ValidBookingDates, BookingRequestDto> {
 
     @Override

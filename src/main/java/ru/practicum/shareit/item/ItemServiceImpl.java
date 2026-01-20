@@ -166,7 +166,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Comment> getItemComments (Long itemId) {
+    public List<Comment> getItemComments(Long itemId) {
         validateItemId(itemId);
         return commentRepository.findByItem_Id(itemId);
     }

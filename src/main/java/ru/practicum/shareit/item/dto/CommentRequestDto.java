@@ -13,6 +13,6 @@ import org.hibernate.validator.constraints.Length;
 public class CommentRequestDto {
     @Length(max = 1024, message = "Комментарий должен быть не более 1024 символов.")
     Long userId;
-    Long ItemId;
+    Long itemId;
     String text;
 }
