@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.mapper;
 
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.UpdatedItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -35,7 +36,7 @@ public class ItemMapper {
     }
 
     public static List<ItemDto> toItemsDto(List<Item> items, Map<Long, Booking> lastBookingMap,
-                                           Map<Long, Booking> nextBookingMap) {
+                                           Map<Long, Booking> nextBookingMap, List<CommentDto> comments) {
         return items.stream()
                 .map(item -> {
                     ItemDto dto = toItemDto(item);
@@ -45,6 +46,7 @@ public class ItemMapper {
 
                     dto.setLastBooking(last != null ? last.getEnd() : null);
                     dto.setNextBooking(next != null ? next.getStart() : null);
+                    dto.setComments(comments);
 
                     return dto;
                 })

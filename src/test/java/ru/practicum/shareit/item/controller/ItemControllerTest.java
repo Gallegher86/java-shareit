@@ -96,6 +96,7 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.available").value(false));
     }
 
+    @Test
     void shouldReturnItemById() throws Exception {
         Long userId = 1L;
         Long itemId = 5L;
@@ -123,22 +124,28 @@ class ItemControllerTest {
     void shouldReturnOwnersItems() throws Exception {
         Long userId = 1L;
 
-        Item item1 = Item.builder()
+        ItemDto itemDto1 = ItemDto.builder()
                 .id(1L)
                 .name("Drill")
                 .description("Powerful drill")
                 .available(true)
+                .lastBooking(null)
+                .nextBooking(null)
+                .comments(List.of())
                 .build();
 
-        Item item2 = Item.builder()
+        ItemDto itemDto2 = ItemDto.builder()
                 .id(2L)
                 .name("Hammer")
                 .description("Heavy hammer")
                 .available(false)
+                .lastBooking(null)
+                .nextBooking(null)
+                .comments(List.of())
                 .build();
 
         when(itemService.findOwnersItems(userId))
-                .thenReturn(List.of(item1, item2));
+                .thenReturn(List.of(itemDto1, itemDto2));
 
         mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", userId))

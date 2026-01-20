@@ -118,7 +118,9 @@ public class ItemServiceImpl implements ItemService {
                         (existing, ignored) -> existing
                 ));
 
-        return ItemMapper.toItemsDto(items, lastBookingMap, nextBookingMap);
+        List<CommentDto> comments = getUserComment(userId).stream().map(CommentMapper::toCommentDto).toList();
+
+        return ItemMapper.toItemsDto(items, lastBookingMap, nextBookingMap, comments);
     }
 
     @Override
