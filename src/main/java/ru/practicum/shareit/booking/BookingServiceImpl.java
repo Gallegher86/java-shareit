@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingRole;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.BookingProcessingException;
@@ -65,18 +66,29 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public List<Booking> getBookerBookings(Long bookerId, BookingState state) {
+        userService.validateUserId(bookerId);
+        return getBookings(bookerId, state, BookingRole.BOOKER);
+    }
+
+    @Override
+    public List<Booking> getOwnerBookings(Long ownerId, BookingState state) {
+        userService.validateUserId(ownerId);
+        return getBookings(ownerId, state, BookingRole.OWNER);
+    }
+
     @Transactional(readOnly = true)
-    public List<Booking> getBookings(Long userId, BookingState state) {
-        userService.validateUserId(userId);
+    private List<Booking> getBookings(Long userId, BookingState state, BookingRole role) {
         LocalDateTime now = LocalDateTime.now();
+        String roleStr = role.name();
 
         return switch (state) {
-            case ALL -> bookingRepository.findAllByItemOwnerOrBooker(userId);
-            case CURRENT -> bookingRepository.findAllStateCurrent(userId, now);
-            case PAST -> bookingRepository.findAllStatePast(userId, now);
-            case FUTURE -> bookingRepository.findAllStateFuture(userId, now);
-            case WAITING -> bookingRepository.findByItemOwnerOrBookerAndStatus(userId, BookingStatus.WAITING);
-            case REJECTED -> bookingRepository.findByItemOwnerOrBookerAndStatus(userId, BookingStatus.REJECTED);
+            case ALL -> bookingRepository.findAllByItemOwnerOrBooker(userId, roleStr);
+            case CURRENT -> bookingRepository.findAllStateCurrent(userId, now, roleStr);
+            case PAST -> bookingRepository.findAllStatePast(userId, now, roleStr);
+            case FUTURE -> bookingRepository.findAllStateFuture(userId, now, roleStr);
+            case WAITING -> bookingRepository.findByItemOwnerOrBookerAndStatus(userId, BookingStatus.WAITING, roleStr);
+            case REJECTED -> bookingRepository.findByItemOwnerOrBookerAndStatus(userId, BookingStatus.REJECTED, roleStr);
         };
     }
 }

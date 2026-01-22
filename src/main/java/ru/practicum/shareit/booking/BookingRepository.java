@@ -33,46 +33,55 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(" select b " +
             "from Booking b " +
             "join b.item i " +
-            "where (b.booker.id = :userId or i.owner.id = :userId) " +
+            "where ((:role = 'BOOKER' and b.booker.id = :userId) " +
+            "or (:role = 'OWNER' and i.owner.id = :userId)) " +
             "order by b.start desc"
     )
-    List<Booking> findAllByItemOwnerOrBooker(@Param("userId") Long userId);
+    List<Booking> findAllByItemOwnerOrBooker(@Param("userId") Long userId, @Param("role") String role);
 
     @Query(" select b " +
             "from Booking b " +
             "join b.item i " +
-            "where (b.booker.id = :userId or i.owner.id = :userId) " +
+            "where ((:role = 'BOOKER' and b.booker.id = :userId) " +
+            "or (:role = 'OWNER' and i.owner.id = :userId)) " +
             "and (b.start <= :now and b.end >= :now) " +
             "order by b.start desc"
     )
-    List<Booking> findAllStateCurrent(@Param("userId") Long userId, @Param("now") LocalDateTime now);
+    List<Booking> findAllStateCurrent(@Param("userId") Long userId, @Param("now") LocalDateTime now,
+                                      @Param("role") String role);
 
     @Query(" select b " +
             "from Booking b " +
             "join b.item i " +
-            "where (b.booker.id = :userId or i.owner.id = :userId) " +
-            "and (b.start < :now) " +
+            "where ((:role = 'BOOKER' and b.booker.id = :userId) " +
+            "or (:role = 'OWNER' and i.owner.id = :userId)) " +
+            "and (b.end < :now) " +
             "order by b.start desc"
     )
-    List<Booking> findAllStatePast(@Param("userId") Long userId, @Param("now") LocalDateTime now);
+    List<Booking> findAllStatePast(@Param("userId") Long userId, @Param("now") LocalDateTime now,
+                                   @Param("role") String role);
 
     @Query(" select b " +
             "from Booking b " +
             "join b.item i " +
-            "where (b.booker.id = :userId or i.owner.id = :userId) " +
-            "and (b.end > :now) " +
+            "where ((:role = 'BOOKER' and b.booker.id = :userId) " +
+            "or (:role = 'OWNER' and i.owner.id = :userId)) " +
+            "and (b.start > :now) " +
             "order by b.start desc"
     )
-    List<Booking> findAllStateFuture(@Param("userId") Long userId, @Param("now") LocalDateTime now);
+    List<Booking> findAllStateFuture(@Param("userId") Long userId, @Param("now") LocalDateTime now,
+                                     @Param("role") String role);
 
     @Query(" select b " +
             "from Booking b " +
             "join b.item i " +
-            "where (b.booker.id = :userId or i.owner.id = :userId) " +
+            "where ((:role = 'BOOKER' and b.booker.id = :userId) " +
+            "or (:role = 'OWNER' and i.owner.id = :userId)) " +
             "and b.status = :status " +
             "order by b.start desc"
     )
-    List<Booking> findByItemOwnerOrBookerAndStatus(@Param("userId") Long userId, @Param("status") BookingStatus status);
+    List<Booking> findByItemOwnerOrBookerAndStatus(@Param("userId") Long userId, @Param("status") BookingStatus status,
+                                                   @Param("role") String role);
 
     @Query("select b " +
             "from Booking b " +

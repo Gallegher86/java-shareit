@@ -47,7 +47,7 @@ public class BookingController {
                                             @RequestParam(defaultValue = "ALL") BookingState state) {
         log.info("От пользователя с userId {} получен запрос на получение списка всех его бронирований.",
                 userId);
-        return bookingService.getBookings(userId, state).stream().map(BookingMapper::toDto).toList();
+        return bookingService.getBookerBookings(userId, state).stream().map(BookingMapper::toDto).toList();
     }
 
     @GetMapping("/owner")
@@ -55,6 +55,6 @@ public class BookingController {
                                              @RequestParam(defaultValue = "ALL") BookingState state) {
         log.info("От владельца вещей с userId {} получен запрос на получение списка всех его бронирований.",
                 userId);
-        return bookingService.getBookings(userId, state).stream().map(BookingMapper::toDto).toList();
+        return bookingService.getOwnerBookings(userId, state).stream().map(BookingMapper::toDto).toList();
     }
 }
