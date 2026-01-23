@@ -38,6 +38,10 @@ public class BookingServiceImpl implements BookingService {
                     "Вещь с id %d не доступна для бронирования.", item.getId()));
         }
 
+        if (item.getOwner().getId().equals(userId)) {
+            throw new BookingProcessingException("Вещь не может быть забронирована ее владельцем.");
+        }
+
         User user = userService.findById(userId);
 
         return bookingRepository.save(BookingMapper.toBooking(dto, user, item));
@@ -61,7 +65,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public Booking getBooking(Long bookingId, Long userId) {
-        return  bookingRepository.findByIdItemOwnerOrBooker(bookingId, userId)
+        return bookingRepository.findByIdItemOwnerOrBooker(bookingId, userId)
                 .orElseThrow(() -> new BookingProcessingException("Бронирование с подходящими параметрами не найдено."));
     }
 
@@ -88,7 +92,8 @@ public class BookingServiceImpl implements BookingService {
             case PAST -> bookingRepository.findAllStatePast(userId, now, roleStr);
             case FUTURE -> bookingRepository.findAllStateFuture(userId, now, roleStr);
             case WAITING -> bookingRepository.findByItemOwnerOrBookerAndStatus(userId, BookingStatus.WAITING, roleStr);
-            case REJECTED -> bookingRepository.findByItemOwnerOrBookerAndStatus(userId, BookingStatus.REJECTED, roleStr);
+            case REJECTED ->
+                    bookingRepository.findByItemOwnerOrBookerAndStatus(userId, BookingStatus.REJECTED, roleStr);
         };
     }
 }
