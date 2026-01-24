@@ -7,10 +7,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.UpdatedItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.item.ItemService;
 
 import java.util.List;
 
@@ -95,6 +96,7 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.available").value(false));
     }
 
+    @Test
     void shouldReturnItemById() throws Exception {
         Long userId = 1L;
         Long itemId = 5L;
@@ -122,22 +124,28 @@ class ItemControllerTest {
     void shouldReturnOwnersItems() throws Exception {
         Long userId = 1L;
 
-        Item item1 = Item.builder()
+        ItemDto itemDto1 = ItemDto.builder()
                 .id(1L)
                 .name("Drill")
                 .description("Powerful drill")
                 .available(true)
+                .lastBooking(null)
+                .nextBooking(null)
+                .comments(List.of())
                 .build();
 
-        Item item2 = Item.builder()
+        ItemDto itemDto2 = ItemDto.builder()
                 .id(2L)
                 .name("Hammer")
                 .description("Heavy hammer")
                 .available(false)
+                .lastBooking(null)
+                .nextBooking(null)
+                .comments(List.of())
                 .build();
 
         when(itemService.findOwnersItems(userId))
-                .thenReturn(List.of(item1, item2));
+                .thenReturn(List.of(itemDto1, itemDto2));
 
         mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", userId))

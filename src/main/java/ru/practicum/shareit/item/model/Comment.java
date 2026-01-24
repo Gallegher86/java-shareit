@@ -1,38 +1,38 @@
 package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
-import ru.practicum.shareit.request.model.ItemRequest;
 import lombok.*;
 import ru.practicum.shareit.user.model.User;
+
+import java.time.LocalDateTime;
 
 @Builder(toBuilder = true)
 @Getter
 @Setter
 @ToString
 @Entity
-@Table(name = "items")
+@Table(name = "comments")
 @EqualsAndHashCode(of = {"id"})
 @AllArgsConstructor
 @NoArgsConstructor
-public class Item {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Column
-    private String name;
-
-    @Column
-    private String description;
-
-    @Column
-    private Boolean available;
+    String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "item_id", nullable = false)
     @ToString.Exclude
-    private User owner;
+    Item item;
 
-    @Transient
-    private ItemRequest request;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    @ToString.Exclude
+    User author;
+
+    @Column
+    LocalDateTime created;
 }

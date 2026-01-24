@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import ru.practicum.shareit.exceptions.EmailAlreadyUsedException;
-import ru.practicum.shareit.exceptions.ItemDontBelongToUserException;
-import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.*;
 
 import java.util.List;
 
@@ -53,6 +51,42 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
+    @ExceptionHandler(ItemUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handleItemUnavailableException(ItemUnavailableException ex) {
+        log.warn(ex.getMessage());
+
+        ErrorResponse body = ErrorResponse.builder()
+                .errorMessage(ex.getMessage())
+                .errorCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(BookingProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleBookingProcessingException(BookingProcessingException ex) {
+        log.warn(ex.getMessage());
+
+        ErrorResponse body = ErrorResponse.builder()
+                .errorMessage(ex.getMessage())
+                .errorCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(CommentProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleCommentProcessingException(CommentProcessingException ex) {
+        log.warn(ex.getMessage());
+
+        ErrorResponse body = ErrorResponse.builder()
+                .errorMessage(ex.getMessage())
+                .errorCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
