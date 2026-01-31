@@ -50,7 +50,7 @@ class ItemControllerTest {
                 .available(true)
                 .build();
 
-        when(itemService.create(eq(userId), any(Item.class)))
+        when(itemService.create(eq(userId), any(ItemDto.class)))
                 .thenReturn(savedItem);
 
         mockMvc.perform(post("/items")
