@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 @ToString
 public class ErrorResponse {
-    private String errorMessage;
+    private String error;
     private int errorCode;
     private List<String> details;
 }

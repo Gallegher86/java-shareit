@@ -23,6 +23,7 @@ public class ItemDto {
     private String description;
     @NotNull(message = "У вещи должна быть указана доступность.")
     private Boolean available;
+    private Long requestId;
     private LocalDateTime lastBooking;
     private LocalDateTime nextBooking;
     List<CommentDto> comments;

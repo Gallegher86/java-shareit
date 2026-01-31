@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @Setter
 @ToString
-public class CommentRequestDto {
+public class IncomingCommentDto {
     @Length(max = 1024, message = "Комментарий должен быть не более 1024 символов.")
     private String text;
 }

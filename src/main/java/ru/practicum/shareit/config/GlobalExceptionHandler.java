@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
         log.warn("Ресурс не найден: {}", ex.getMessage());
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(ex.getMessage())
+                .error(ex.getMessage())
                 .errorCode(HttpStatus.NOT_FOUND.value())
                 .build();
 
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
         log.warn(ex.getMessage());
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(ex.getMessage())
+                .error(ex.getMessage())
                 .errorCode(HttpStatus.CONFLICT.value())
                 .build();
 
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
         log.warn(ex.getMessage());
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(ex.getMessage())
+                .error(ex.getMessage())
                 .errorCode(HttpStatus.CONFLICT.value())
                 .build();
 
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
         log.warn(ex.getMessage());
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(ex.getMessage())
+                .error(ex.getMessage())
                 .errorCode(HttpStatus.BAD_REQUEST.value())
                 .build();
 
@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
         log.warn(ex.getMessage());
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(ex.getMessage())
+                .error(ex.getMessage())
                 .errorCode(HttpStatus.BAD_REQUEST.value())
                 .build();
 
@@ -82,7 +82,7 @@ public class GlobalExceptionHandler {
         log.warn(ex.getMessage());
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(ex.getMessage())
+                .error(ex.getMessage())
                 .errorCode(HttpStatus.BAD_REQUEST.value())
                 .build();
 
@@ -102,7 +102,7 @@ public class GlobalExceptionHandler {
         log.warn("Валидация не пройдена ({}): {}.", ex.getClass().getSimpleName(), errors);
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(errorMessage)
+                .error(errorMessage)
                 .errorCode(HttpStatus.BAD_REQUEST.value())
                 .details(errors)
                 .build();
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
         log.warn(message);
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(message)
+                .error(message)
                 .errorCode(HttpStatus.BAD_REQUEST.value())
                 .build();
 
@@ -130,7 +130,7 @@ public class GlobalExceptionHandler {
         log.warn(logMessage);
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(errorMessage)
+                .error(errorMessage)
                 .errorCode(HttpStatus.NOT_FOUND.value())
                 .build();
 
@@ -144,7 +144,7 @@ public class GlobalExceptionHandler {
         log.warn(logMessage);
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(errorMessage)
+                .error(errorMessage)
                 .errorCode(HttpStatus.METHOD_NOT_ALLOWED.value())
                 .build();
 
@@ -159,7 +159,7 @@ public class GlobalExceptionHandler {
         log.warn(errorMessage);
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(errorMessage)
+                .error(errorMessage)
                 .errorCode(HttpStatus.BAD_REQUEST.value())
                 .build();
 
@@ -172,7 +172,7 @@ public class GlobalExceptionHandler {
         log.error("Необработанное исключение: {} - {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
 
         ErrorResponse body = ErrorResponse.builder()
-                .errorMessage(errorMessage)
+                .error(errorMessage)
                 .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .build();
 

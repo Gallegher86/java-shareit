@@ -33,6 +33,8 @@ public class Item {
     @ToString.Exclude
     private User owner;
 
-    @Transient
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "request_id")
+    @ToString.Exclude
     private ItemRequest request;
 }

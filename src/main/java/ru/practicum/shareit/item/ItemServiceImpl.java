@@ -11,12 +11,14 @@ import ru.practicum.shareit.exceptions.CommentProcessingException;
 import ru.practicum.shareit.exceptions.ItemDontBelongToUserException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.CommentRequestDto;
+import ru.practicum.shareit.item.dto.IncomingCommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestService;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserService;
 
@@ -30,15 +32,23 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
-    private final UserService userService;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestService itemRequestService;
+    private final UserService userService;
 
     @Override
     @Transactional
-    public Item create(Long userId, Item newItem) {
+    public Item create(Long userId, ItemDto dto) {
         User owner = userService.findById(userId);
+        Item newItem = ItemMapper.toItemCreated(dto);
         newItem.setOwner(owner);
+
+        if (dto.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestService.findById(dto.getRequestId());
+            newItem.setRequest(itemRequest);
+        }
+        
         Item item = itemRepository.save(newItem);
         log.info("Вещь {} с id {} добавлена в список.", item.getName(), item.getId());
         return item;
@@ -137,7 +147,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Comment createComment(Long userId, Long itemId, CommentRequestDto dto) {
+    public Comment createComment(Long userId, Long itemId, IncomingCommentDto dto) {
         userService.validateUserId(userId);
         validateItemId(itemId);
 
