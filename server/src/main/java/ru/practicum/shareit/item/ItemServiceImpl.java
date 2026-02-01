@@ -41,7 +41,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public Item create(Long userId, ItemDto dto) {
         User owner = userService.findById(userId);
-        Item newItem = ItemMapper.toItemCreated(dto);
+        Item newItem = ItemMapper.toItem(dto);
         newItem.setOwner(owner);
 
         if (dto.getRequestId() != null) {

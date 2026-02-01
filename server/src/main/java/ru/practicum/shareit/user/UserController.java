@@ -16,7 +16,7 @@ public class UserController {
 
     @PostMapping
     public UserDto create(@RequestBody UserDto userDto) {
-        log.info("Server. Получен запрос на добавление пользователя с именем/логином {}.", userDto.getName());
+        log.info("Получен запрос на добавление пользователя с именем/логином {}.", userDto.getName());
         User user = UserMapper.toUser(userDto);
         User savedUser = userService.create(user);
         return UserMapper.toUserDto(savedUser);
@@ -24,7 +24,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     public UserDto update(@PathVariable Long id, @RequestBody UserDto userDto) {
-        log.info("Server. Получен запрос на обновление пользователя с id {}.", id);
+        log.info("Получен запрос на обновление пользователя с id {}.", id);
         User user = UserMapper.toUser(userDto);
         user.setId(id);
         User updatedUser = userService.update(user);

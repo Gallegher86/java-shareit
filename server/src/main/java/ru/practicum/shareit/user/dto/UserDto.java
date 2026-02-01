@@ -1,9 +1,6 @@
 package ru.practicum.shareit.user.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
 @Builder(toBuilder = true)
 @Getter

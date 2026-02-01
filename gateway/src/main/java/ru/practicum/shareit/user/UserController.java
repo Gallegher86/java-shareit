@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.dto.CreatedUserDto;
-import ru.practicum.shareit.user.dto.UpdatedUserDto;
+import ru.practicum.shareit.user.dto.UserDtoCreated;
+import ru.practicum.shareit.user.dto.UserDtoUpdated;
 
 @Controller
 @RequestMapping(path = "/users")
@@ -19,14 +19,14 @@ public class UserController {
     private final UserClient userClient;
 
     @PostMapping
-    public ResponseEntity<Object> create(@Valid @RequestBody CreatedUserDto dto) {
-        log.info("Gateway. Получен запрос на добавление пользователя с именем/логином {}.", dto.getName());
+    public ResponseEntity<Object> create(@Valid @RequestBody UserDtoCreated dto) {
+        log.info("Получен запрос на добавление пользователя с именем/логином {}.", dto.getName());
         return userClient.create(dto);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody UpdatedUserDto dto) {
-        log.info("Gateway. Получен запрос на обновление пользователя с id {}.", id);
+    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody UserDtoUpdated dto) {
+        log.info("Получен запрос на обновление пользователя с id {}.", id);
         return userClient.update(id, dto);
     }
 

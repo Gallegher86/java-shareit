@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @ToString
 @EqualsAndHashCode(of = {"id"})
-public class CreatedUserDto {
+public class UserDtoCreated {
     private Long id;
     @NotBlank(message = "Имя/логин пользователя должны быть указаны.")
     @Length(max = 255, message = "Имя/логин пользователя должен включать не более 255 символов.")

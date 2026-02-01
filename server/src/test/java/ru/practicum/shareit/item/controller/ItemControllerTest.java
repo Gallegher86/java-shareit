@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.UpdatedItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.ItemService;
 
@@ -69,7 +68,7 @@ class ItemControllerTest {
         Long userId = 1L;
         Long itemId = 10L;
 
-        UpdatedItemDto updatedDto = UpdatedItemDto.builder()
+        ItemDto updatedDto = ItemDto.builder()
                 .name("Updated drill")
                 .description("Updated description")
                 .available(false)
@@ -192,20 +191,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$[1].name").value("Mini drill"));
     }
 
-    @Test
-    void shouldFailWhenNameIsNull() throws Exception {
-        ItemDto dto = ItemDto.builder()
-                .description("desc")
-                .available(true)
-                .build();
-
-        mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
-    }
-
     void shouldFailWhenNameIsBlank() throws Exception {
         ItemDto dto = ItemDto.builder()
                 .name("")
@@ -224,20 +209,6 @@ class ItemControllerTest {
         ItemDto dto = ItemDto.builder()
                 .name("Drill")
                 .available(true)
-                .build();
-
-        mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void shouldFailWhenAvailableIsNull() throws Exception {
-        ItemDto dto = ItemDto.builder()
-                .name("Drill")
-                .description("desc")
                 .build();
 
         mockMvc.perform(post("/items")

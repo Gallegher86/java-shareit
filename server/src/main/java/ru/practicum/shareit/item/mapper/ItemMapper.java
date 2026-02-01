@@ -4,7 +4,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoForRequestDto;
-import ru.practicum.shareit.item.dto.UpdatedItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -20,19 +19,11 @@ public class ItemMapper {
                 .build();
     }
 
-    public static Item toItemCreated(ItemDto itemDto) {
+    public static Item toItem(ItemDto itemDto) {
         return Item.builder()
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
-                .build();
-    }
-
-    public static Item toItemUpdated(UpdatedItemDto updatedItemDto) {
-        return Item.builder()
-                .name(updatedItemDto.getName())
-                .description(updatedItemDto.getDescription())
-                .available(updatedItemDto.getAvailable())
                 .build();
     }
 

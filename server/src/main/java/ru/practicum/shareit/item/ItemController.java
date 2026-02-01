@@ -1,13 +1,11 @@
 package ru.practicum.shareit.item;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.IncomingCommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.UpdatedItemDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -22,7 +20,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
         log.info("От пользователя с userId {} получен запрос на добавление вещи {}.", userId, itemDto.getName());
         Item savedItem = itemService.create(userId, itemDto);
         return ItemMapper.toItemDto(savedItem);
@@ -30,9 +28,9 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     public ItemDto update(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long id,
-                          @Valid @RequestBody UpdatedItemDto updatedItemDto) {
-        log.info("Получен запрос на обновление пользователя с id {}.", id);
-        Item item = ItemMapper.toItemUpdated(updatedItemDto);
+                          @RequestBody ItemDto itemDto) {
+        log.info("От пользователя с userId {} получен запрос на обновление вещи с id {}.", userId, id);
+        Item item = ItemMapper.toItem(itemDto);
         item.setId(id);
         Item updatedItem = itemService.update(userId, item);
         return ItemMapper.toItemDto(updatedItem);
