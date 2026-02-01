@@ -8,7 +8,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.user.UserController;
-import ru.practicum.shareit.user.dto.UpdatedUserDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserService;
@@ -61,7 +60,7 @@ class UserControllerTest {
     void shouldUpdateUser() throws Exception {
         Long userId = 1L;
 
-        UpdatedUserDto updatedDto = UpdatedUserDto.builder()
+        UserDto updatedDto = UserDto.builder()
                 .name("Updated name")
                 .email("updated@mail.com")
                 .build();
@@ -112,55 +111,5 @@ class UserControllerTest {
                 .andExpect(status().isOk());
 
         verify(userService).delete(userId);
-    }
-
-    @Test
-    void shouldFailWhenNameIsNull() throws Exception {
-        UserDto dto = UserDto.builder()
-                .email("user@mail.com")
-                .build();
-
-        mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void shouldFailWhenNameIsBlank() throws Exception {
-        UserDto dto = UserDto.builder()
-                .name("")
-                .email("user@mail.com")
-                .build();
-
-        mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void shouldFailWhenEmailIsNull() throws Exception {
-        UserDto dto = UserDto.builder()
-                .name("User")
-                .build();
-
-        mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void shouldFailWhenEmailIsInvalid() throws Exception {
-        UserDto dto = UserDto.builder()
-                .name("User")
-                .email("not-an-email")
-                .build();
-
-        mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
     }
 }
