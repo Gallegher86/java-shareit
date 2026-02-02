@@ -1,8 +1,10 @@
 package ru.practicum.shareit.booking;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
@@ -20,7 +22,7 @@ public class BookingController {
 
     @PostMapping
     public BookingDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                             @Valid @RequestBody BookingRequestDto requestDto) {
+                             @RequestBody BookingRequestDto requestDto) {
         log.info("От пользователя с userId {} получен запрос на бронирование вещи с Id {}.",
                 userId, requestDto.getItemId());
         return BookingMapper.toDto(bookingService.create(userId, requestDto));
@@ -44,17 +46,40 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getBookerBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                            @RequestParam(defaultValue = "ALL") BookingState state) {
+                                              @RequestParam(defaultValue = "ALL") BookingState state,
+                                              @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                              @RequestParam(name = "size", required = false) Integer size) {
         log.info("От пользователя с userId {} получен запрос на получение списка всех его бронирований.",
                 userId);
-        return bookingService.getBookerBookings(userId, state).stream().map(BookingMapper::toDto).toList();
+
+        Pageable pageable = makePageable(from, size);
+
+        return bookingService.getBookerBookings(userId, state, pageable);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getOwnerBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                             @RequestParam(defaultValue = "ALL") BookingState state) {
+                                             @RequestParam(defaultValue = "ALL") BookingState state,
+                                             @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                             @RequestParam(name = "size", required = false) Integer size) {
         log.info("От владельца вещей с userId {} получен запрос на получение списка всех его бронирований.",
                 userId);
-        return bookingService.getOwnerBookings(userId, state).stream().map(BookingMapper::toDto).toList();
+
+        Pageable pageable = makePageable(from, size);
+
+        return bookingService.getOwnerBookings(userId, state, pageable);
+    }
+
+    private Pageable makePageable(Integer from, Integer size) {
+        if (size == null) {
+            size = Integer.MAX_VALUE;
+            from = 0;
+        }
+
+        return PageRequest.of(
+                from / size,
+                size,
+                Sort.by(Sort.Direction.DESC, "start")
+        );
     }
 }

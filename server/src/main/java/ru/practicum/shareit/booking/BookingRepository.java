@@ -1,5 +1,7 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,54 +36,50 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "from Booking b " +
             "join b.item i " +
             "where ((:role = 'BOOKER' and b.booker.id = :userId) " +
-            "or (:role = 'OWNER' and i.owner.id = :userId)) " +
-            "order by b.start desc"
+            "or (:role = 'OWNER' and i.owner.id = :userId))"
     )
-    List<Booking> findAllByItemOwnerOrBooker(@Param("userId") Long userId, @Param("role") String role);
+    Page<Booking> findAllByItemOwnerOrBooker(@Param("userId") Long userId, @Param("role") String role,
+                                             Pageable pageable);
 
     @Query(" select b " +
             "from Booking b " +
             "join b.item i " +
             "where ((:role = 'BOOKER' and b.booker.id = :userId) " +
             "or (:role = 'OWNER' and i.owner.id = :userId)) " +
-            "and (b.start <= :now and b.end >= :now) " +
-            "order by b.start desc"
+            "and (b.start <= :now and b.end >= :now)"
     )
-    List<Booking> findAllStateCurrent(@Param("userId") Long userId, @Param("now") LocalDateTime now,
-                                      @Param("role") String role);
+    Page<Booking> findAllStateCurrent(@Param("userId") Long userId, @Param("now") LocalDateTime now,
+                                      @Param("role") String role, Pageable pageable);
 
     @Query(" select b " +
             "from Booking b " +
             "join b.item i " +
             "where ((:role = 'BOOKER' and b.booker.id = :userId) " +
             "or (:role = 'OWNER' and i.owner.id = :userId)) " +
-            "and (b.end < :now) " +
-            "order by b.start desc"
+            "and (b.end < :now)"
     )
-    List<Booking> findAllStatePast(@Param("userId") Long userId, @Param("now") LocalDateTime now,
-                                   @Param("role") String role);
+    Page<Booking> findAllStatePast(@Param("userId") Long userId, @Param("now") LocalDateTime now,
+                                   @Param("role") String role, Pageable pageable);
 
     @Query(" select b " +
             "from Booking b " +
             "join b.item i " +
             "where ((:role = 'BOOKER' and b.booker.id = :userId) " +
             "or (:role = 'OWNER' and i.owner.id = :userId)) " +
-            "and (b.start > :now) " +
-            "order by b.start desc"
+            "and (b.start > :now)"
     )
-    List<Booking> findAllStateFuture(@Param("userId") Long userId, @Param("now") LocalDateTime now,
-                                     @Param("role") String role);
+    Page<Booking> findAllStateFuture(@Param("userId") Long userId, @Param("now") LocalDateTime now,
+                                     @Param("role") String role, Pageable pageable);
 
     @Query(" select b " +
             "from Booking b " +
             "join b.item i " +
             "where ((:role = 'BOOKER' and b.booker.id = :userId) " +
             "or (:role = 'OWNER' and i.owner.id = :userId)) " +
-            "and b.status = :status " +
-            "order by b.start desc"
+            "and b.status = :status"
     )
-    List<Booking> findByItemOwnerOrBookerAndStatus(@Param("userId") Long userId, @Param("status") BookingStatus status,
-                                                   @Param("role") String role);
+    Page<Booking> findByItemOwnerOrBookerAndStatus(@Param("userId") Long userId, @Param("status") BookingStatus status,
+                                                   @Param("role") String role, Pageable pageable);
 
     @Query("select b " +
             "from Booking b " +

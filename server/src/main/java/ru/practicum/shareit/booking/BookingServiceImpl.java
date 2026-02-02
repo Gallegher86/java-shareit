@@ -2,8 +2,11 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -70,30 +73,33 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getBookerBookings(Long bookerId, BookingState state) {
+    public List<BookingDto> getBookerBookings(Long bookerId, BookingState state, Pageable pageable) {
         userService.validateUserId(bookerId);
-        return getBookings(bookerId, state, BookingRole.BOOKER);
+        Page<Booking> bookings = getBookings(bookerId, state, BookingRole.BOOKER, pageable);
+        return bookings.getContent().stream().map(BookingMapper::toDto).toList();
     }
 
     @Override
-    public List<Booking> getOwnerBookings(Long ownerId, BookingState state) {
+    public List<BookingDto> getOwnerBookings(Long ownerId, BookingState state, Pageable pageable) {
         userService.validateUserId(ownerId);
-        return getBookings(ownerId, state, BookingRole.OWNER);
+        Page<Booking> bookings = getBookings(ownerId, state, BookingRole.OWNER, pageable);
+        return bookings.getContent().stream().map(BookingMapper::toDto).toList();
     }
 
     @Transactional(readOnly = true)
-    private List<Booking> getBookings(Long userId, BookingState state, BookingRole role) {
+    private Page<Booking> getBookings(Long userId, BookingState state, BookingRole role, Pageable pageable) {
         LocalDateTime now = LocalDateTime.now();
         String roleStr = role.name();
 
         return switch (state) {
-            case ALL -> bookingRepository.findAllByItemOwnerOrBooker(userId, roleStr);
-            case CURRENT -> bookingRepository.findAllStateCurrent(userId, now, roleStr);
-            case PAST -> bookingRepository.findAllStatePast(userId, now, roleStr);
-            case FUTURE -> bookingRepository.findAllStateFuture(userId, now, roleStr);
-            case WAITING -> bookingRepository.findByItemOwnerOrBookerAndStatus(userId, BookingStatus.WAITING, roleStr);
-            case REJECTED ->
-                    bookingRepository.findByItemOwnerOrBookerAndStatus(userId, BookingStatus.REJECTED, roleStr);
+            case ALL -> bookingRepository.findAllByItemOwnerOrBooker(userId, roleStr, pageable);
+            case CURRENT -> bookingRepository.findAllStateCurrent(userId, now, roleStr, pageable);
+            case PAST -> bookingRepository.findAllStatePast(userId, now, roleStr, pageable);
+            case FUTURE -> bookingRepository.findAllStateFuture(userId, now, roleStr, pageable);
+            case WAITING -> bookingRepository.findByItemOwnerOrBookerAndStatus(userId, BookingStatus.WAITING,
+                    roleStr, pageable);
+            case REJECTED -> bookingRepository.findByItemOwnerOrBookerAndStatus(userId, BookingStatus.REJECTED,
+                    roleStr, pageable);
         };
     }
 }
