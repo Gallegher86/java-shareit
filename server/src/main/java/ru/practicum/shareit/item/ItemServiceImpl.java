@@ -48,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
             ItemRequest itemRequest = itemRequestService.findById(dto.getRequestId());
             newItem.setRequest(itemRequest);
         }
-        
+
         Item item = itemRepository.save(newItem);
         log.info("Вещь {} с id {} добавлена в список.", item.getName(), item.getId());
         return item;
