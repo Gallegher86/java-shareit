@@ -12,6 +12,7 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode(of = {"id"})
 @AllArgsConstructor
+@NoArgsConstructor
 public class ItemRequestDto {
     private Long id;
     private String description;

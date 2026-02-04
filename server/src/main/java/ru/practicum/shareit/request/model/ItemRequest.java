@@ -6,6 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder(toBuilder = true)
@@ -34,5 +35,5 @@ public class ItemRequest {
     private LocalDateTime created;
 
     @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
-    private List<Item> items;
+    private List<Item> items = new ArrayList<>();
 }

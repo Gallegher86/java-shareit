@@ -7,6 +7,7 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ItemRequestMapper {
     public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
@@ -22,7 +23,11 @@ public class ItemRequestMapper {
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated())
-                .items(ItemMapper.toRequestDto(itemRequest.getItems()))
+                .items(
+                        itemRequest.getItems() == null
+                                ? List.of()
+                                : ItemMapper.toRequestDto(itemRequest.getItems())
+                )
                 .build();
     }
 

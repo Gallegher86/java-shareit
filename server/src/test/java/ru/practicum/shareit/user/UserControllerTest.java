@@ -11,7 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,7 +45,7 @@ class UserControllerTest {
 
     @Test
     void updateShouldReturnUserDtoWhenValidRequest() throws Exception {
-        UserDto savedUser = saveUser();
+        UserDto savedUser = createUser();
 
         UserDto updatedDto = UserDto.builder()
                 .id(1L)
@@ -65,10 +64,9 @@ class UserControllerTest {
 
     @Test
     void findByIdShouldReturnUserDtoWhenValidRequest() throws Exception {
-        UserDto savedUser = saveUser();
+        UserDto savedUser = createUser();
 
-        mockMvc.perform(get("/users/{id}", savedUser.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/users/{id}", savedUser.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedUser.getId()))
                 .andExpect(jsonPath("$.name").value(savedUser.getName()))
@@ -77,18 +75,16 @@ class UserControllerTest {
 
     @Test
     void deleteUserShouldDeleteUserWhenValidRequest() throws Exception {
-        UserDto savedUser = saveUser();
+        UserDto savedUser = createUser();
 
-        mockMvc.perform(delete("/users/{id}", savedUser.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/users/{id}", savedUser.getId()))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/users/{id}", savedUser.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/users/{id}", savedUser.getId()))
                 .andExpect(status().isNotFound());
     }
 
-    private UserDto saveUser() throws Exception {
+    private UserDto createUser() throws Exception {
         UserDto dto = UserDto.builder()
                 .name("TestUser")
                 .email("test@test.ru")
