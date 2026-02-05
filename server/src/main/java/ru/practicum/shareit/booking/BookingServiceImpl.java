@@ -34,7 +34,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public Booking create(Long userId, BookingRequestDto dto) {
-        Item item = itemService.findById(userId, dto.getItemId());
+        userService.validateUserId(userId);
+        Item item = itemService.getById(dto.getItemId());
 
         if (!item.getAvailable()) {
             throw new ItemUnavailableException(String.format(

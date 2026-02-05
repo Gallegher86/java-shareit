@@ -12,7 +12,7 @@ public interface ItemService {
 
     Item update(Long userId, Item item);
 
-    Item findById(Long userId, Long id);
+    ItemDto findById(Long userId, Long id);
 
     List<ItemDto> findOwnersItems(Long userId);
 
@@ -20,5 +20,5 @@ public interface ItemService {
 
     Comment createComment(Long userId, Long itemId, IncomingCommentDto dto);
 
-    List<Comment> getItemComments(Long itemId);
+    Item getById(Long itemId);
 }

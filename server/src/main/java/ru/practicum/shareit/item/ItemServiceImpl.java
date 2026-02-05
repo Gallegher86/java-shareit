@@ -57,8 +57,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Item update(Long userId, Item updatedItem) {
+        userService.validateUserId(userId);
         Long id = updatedItem.getId();
-        Item item = findById(userId, id);
+        Item item = getById(id);
         boolean changed = false;
 
         if (!item.getOwner().getId().equals(userId)) {
@@ -91,15 +92,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public Item findById(Long userId, Long id) {
+    public ItemDto findById(Long userId, Long id) {
         userService.validateUserId(userId);
-
-        Item item = itemRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(
-                        String.format("Вещь с id %d не найдена.", id)));
-
-        log.info("Вещь с id {} найдена.", id);
-        return item;
+        ItemDto itemDto = ItemMapper.toItemDto(getById(id));
+        List<CommentDto> comments = getItemComments(id);
+        itemDto.setComments(comments);
+        return itemDto;
     }
 
     @Override
@@ -110,27 +108,21 @@ public class ItemServiceImpl implements ItemService {
         LocalDateTime now = LocalDateTime.now();
 
         List<Item> items = itemRepository.findAllByOwnerId(userId);
+
+        if (items.isEmpty()) {
+            return List.of();
+        }
+
         List<Long> itemIds = items.stream().map(Item::getId).toList();
         List<Booking> lastBookings = bookingRepository.findItemsLastBookings(itemIds, now);
         List<Booking> nextBookings = bookingRepository.findItemsNextBookings(itemIds, now);
 
-        Map<Long, Booking> lastBookingMap = lastBookings.stream()
-                .collect(Collectors.toMap(
-                        b -> b.getItem().getId(),
-                        b -> b,
-                        (existing, ignored) -> existing
-                ));
+        Map<Long, Booking> lastBookingMap = mapBooking(lastBookings);
+        Map<Long, Booking> nextBookingMap = mapBooking(nextBookings);
 
-        Map<Long, Booking> nextBookingMap = nextBookings.stream()
-                .collect(Collectors.toMap(
-                        b -> b.getItem().getId(),
-                        b -> b,
-                        (existing, ignored) -> existing
-                ));
+        Map<Long, List<CommentDto>> commentsMap = getUserCommentsMap(itemIds);
 
-        List<CommentDto> comments = getUserComment(userId).stream().map(CommentMapper::toCommentDto).toList();
-
-        return ItemMapper.toItemsDto(items, lastBookingMap, nextBookingMap, comments);
+        return ItemMapper.toItemsDto(items, lastBookingMap, nextBookingMap, commentsMap);
     }
 
     @Override
@@ -175,17 +167,25 @@ public class ItemServiceImpl implements ItemService {
         return commentRepository.save(comment);
     }
 
-    @Override
-    public List<Comment> getItemComments(Long itemId) {
-        validateItemId(itemId);
-        return commentRepository.findByItem_Id(itemId);
+    private List<CommentDto> getItemComments(Long itemId) {
+        return commentRepository.findByItem_Id(itemId)
+                .stream().map(CommentMapper::toCommentDto).toList();
     }
 
-    private List<Comment> getUserComment(Long userId) {
-        userService.validateUserId(userId);
-        List<Long> itemIds = itemRepository.findAllByOwnerId(userId).stream().map(Item::getId).toList();
+    @Override
+    public Item getById(Long id) {
+        Item item = itemRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Вещь с id %d не найдена.", id)));
 
-        return commentRepository.findByItem_IdIn(itemIds);
+        log.info("Вещь с id {} найдена.", id);
+        return item;
+    }
+
+    private Map<Long, List<CommentDto>> getUserCommentsMap(List<Long> itemIds) {
+        return commentRepository.findByItem_IdIn(itemIds).stream()
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.groupingBy(CommentDto::getItemId));
     }
 
     private void validateItemId(Long id) {
@@ -193,5 +193,14 @@ public class ItemServiceImpl implements ItemService {
             String errorMessage = String.format("Вещь с id %d не найдена.", id);
             throw new NotFoundException(errorMessage);
         }
+    }
+
+    private Map<Long, Booking> mapBooking(List<Booking> bookings) {
+        return bookings.stream()
+                .collect(Collectors.toMap(
+                        b -> b.getItem().getId(),
+                        b -> b,
+                        (existing, ignored) -> existing
+                ));
     }
 }

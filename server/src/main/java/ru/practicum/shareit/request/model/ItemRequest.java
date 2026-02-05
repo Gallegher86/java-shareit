@@ -35,5 +35,5 @@ public class ItemRequest {
     private LocalDateTime created;
 
     @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
-    private List<Item> items = new ArrayList<>();
+    private List<Item> items;
 }

@@ -11,10 +11,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.IncomingRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
+
+import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,7 +40,12 @@ class ItemRequestControllerTest {
 
     @Test
     void createShouldReturnItemRequestDtoWhenValidRequest() throws Exception {
-        UserDto requestor = createUser("requestor", "requestor@test.ru");
+        User requestor = new User();
+        requestor.setName("requestor");
+        requestor.setEmail("requestor@test.ru");
+        em.persist(requestor);
+        em.flush();
+        em.clear();
 
         IncomingRequestDto dto = new IncomingRequestDto();
         dto.setDescription("desc");
@@ -55,13 +62,29 @@ class ItemRequestControllerTest {
 
     @Test
     void getUserRequestsShouldReturnItemRequestDtoWhenValidRequest() throws Exception {
-        UserDto requestor = createUser("requestor", "requestor@test.ru");
-        UserDto owner = createUser("owner", "owner@test.ru");
+        User requestor = new User();
+        requestor.setName("requestor");
+        requestor.setEmail("requestor@test.ru");
+        em.persist(requestor);
 
-        ItemRequestDto request = createRequest(requestor.getId());
+        User owner = new User();
+        owner.setName("owner");
+        owner.setEmail("owner@test.ru.ru");
+        em.persist(owner);
 
-        ItemDto item = createItem(owner.getId(), request.getId());
+        ItemRequest request = new ItemRequest();
+        request.setDescription("desc");
+        request.setRequestor(requestor);
+        request.setCreated(LocalDateTime.now());
+        em.persist(request);
 
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setRequest(request);
+        item.setOwner(owner);
+        em.persist(item);
         em.flush();
         em.clear();
 
@@ -83,13 +106,29 @@ class ItemRequestControllerTest {
 
     @Test
     void getRequestByIdShouldReturnItemRequestDtoWhenValidRequest() throws Exception {
-        UserDto requestor = createUser("requestor", "requestor@test.ru");
-        UserDto owner = createUser("owner", "owner@test.ru");
+        User requestor = new User();
+        requestor.setName("requestor");
+        requestor.setEmail("requestor@test.ru");
+        em.persist(requestor);
 
-        ItemRequestDto request = createRequest(requestor.getId());
+        User owner = new User();
+        owner.setName("owner");
+        owner.setEmail("owner@test.ru.ru");
+        em.persist(owner);
 
-        ItemDto item = createItem(owner.getId(), request.getId());
+        ItemRequest request = new ItemRequest();
+        request.setDescription("desc");
+        request.setRequestor(requestor);
+        request.setCreated(LocalDateTime.now());
+        em.persist(request);
 
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setRequest(request);
+        item.setOwner(owner);
+        em.persist(item);
         em.flush();
         em.clear();
 
@@ -109,14 +148,35 @@ class ItemRequestControllerTest {
 
     @Test
     void getAllRequestsShouldReturnItemRequestsDtoWhenValidRequest() throws Exception {
-        UserDto requestor1 = createUser("requestor1", "requestor1@test.ru");
-        UserDto requestor2 = createUser("requestor2", "requestor2@test.ru");
+        User requestor1 = new User();
+        requestor1.setName("requestor1");
+        requestor1.setEmail("requestor1@test.ru");
+        em.persist(requestor1);
 
-        ItemRequestDto request1 = createRequest(requestor1.getId());
-        ItemRequestDto request2 = createRequest(requestor2.getId());
+        User requestor2 = new User();
+        requestor2.setName("requestor2");
+        requestor2.setEmail("requestor2@test.ru");
+        em.persist(requestor2);
 
-        ItemDto item = createItem(requestor2.getId(), request2.getId());
+        ItemRequest request1 = new ItemRequest();
+        request1.setDescription("desc1");
+        request1.setRequestor(requestor1);
+        request1.setCreated(LocalDateTime.now());
+        em.persist(request1);
 
+        ItemRequest request2 = new ItemRequest();
+        request2.setDescription("desc2");
+        request2.setRequestor(requestor2);
+        request2.setCreated(LocalDateTime.now());
+        em.persist(request2);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setRequest(request2);
+        item.setOwner(requestor2);
+        em.persist(item);
         em.flush();
         em.clear();
 
@@ -129,58 +189,5 @@ class ItemRequestControllerTest {
                 .andExpect(jsonPath("$[0].description").value(request2.getDescription()))
                 .andExpect(jsonPath("$[0].created").exists())
                 .andExpect(jsonPath("$[0].items").value(Matchers.nullValue()));
-    }
-
-    private UserDto createUser(String name, String email) throws Exception {
-        UserDto requestor = UserDto.builder()
-                .name(name)
-                .email(email)
-                .build();
-
-        String createResponse = mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestor)))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        return objectMapper.readValue(createResponse, UserDto.class);
-    }
-
-    private ItemDto createItem(Long userId, Long requestId) throws Exception {
-        ItemDto itemDto = ItemDto.builder()
-                .name("name")
-                .description("desc")
-                .available(true)
-                .requestId(requestId)
-                .build();
-
-        String createResponse = mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(itemDto)))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        return objectMapper.readValue(createResponse, ItemDto.class);
-    }
-
-    private ItemRequestDto createRequest(Long userId) throws Exception {
-        IncomingRequestDto dto = new IncomingRequestDto();
-        dto.setDescription("desc");
-
-        String createResponse = mockMvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        return objectMapper.readValue(createResponse, ItemRequestDto.class);
     }
 }

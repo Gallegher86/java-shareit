@@ -28,7 +28,7 @@ public class ItemMapper {
     }
 
     public static List<ItemDto> toItemsDto(List<Item> items, Map<Long, Booking> lastBookingMap,
-                                           Map<Long, Booking> nextBookingMap, List<CommentDto> comments) {
+                                           Map<Long, Booking> nextBookingMap, Map<Long, List<CommentDto>> commentsMap) {
         return items.stream()
                 .map(item -> {
                     ItemDto dto = toItemDto(item);
@@ -38,7 +38,7 @@ public class ItemMapper {
 
                     dto.setLastBooking(last != null ? last.getEnd() : null);
                     dto.setNextBooking(next != null ? next.getStart() : null);
-                    dto.setComments(comments);
+                    dto.setComments(commentsMap.getOrDefault(item.getId(), List.of()));
 
                     return dto;
                 })

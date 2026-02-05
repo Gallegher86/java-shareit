@@ -24,7 +24,7 @@ class UserServiceImplTest {
     private UserServiceImpl userService;
 
     @Test
-    void testCreateUserWithNewEmailWorks() {
+    void createUserWithNewEmailWorks() {
         User newUser = new User();
         newUser.setName("TestUser");
         newUser.setEmail("test@test.ru");
@@ -51,7 +51,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testCreateUserWithExistingEmailThrowsException() {
+    void createUserWithExistingEmailThrowsException() {
         User newUser = new User();
         newUser.setEmail("test@test.ru");
 
@@ -66,7 +66,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUpdateWithUpdatedUserWorks() {
+    void updateWithUpdatedUserWorks() {
         User updatedUser = new User();
         updatedUser.setId(1L);
         updatedUser.setName("UpdatedUser");
@@ -97,7 +97,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUpdateWithNullFieldsDoNothing() {
+    void updateWithNullFieldsDoNothing() {
         User updatedUser = new User();
         updatedUser.setId(1L);
 
@@ -122,7 +122,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUpdateWithUserNotExistThrowsException() {
+    void updateWithUserNotExistThrowsException() {
         User updatedUser = new User();
         updatedUser.setId(1L);
         updatedUser.setName("UpdatedUser");
@@ -139,7 +139,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUpdateWithExistingEmailThrowsException() {
+    void updateWithExistingEmailThrowsException() {
         User updatedUser = new User();
         updatedUser.setId(1L);
         updatedUser.setName("UpdatedUser");
@@ -161,7 +161,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testFindByIdWithUserExistReturnsUser() {
+    void findByIdWithUserExistReturnsUser() {
         User savedUser = new User();
         savedUser.setId(1L);
         savedUser.setName("TestUser");
@@ -182,7 +182,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testFindByIdWithUserNotExistThrowsException() {
+    void findByIdWithUserNotExistThrowsException() {
         when(userRepository.findById(1L))
                 .thenReturn(Optional.empty());
 
@@ -193,7 +193,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testDeleteWithUserExistWorks() {
+    void deleteWithUserExistWorks() {
         userService.delete(1L);
 
         verify(userRepository).deleteById(1L);
@@ -201,7 +201,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testDeleteWithUserNotExistThrowsException() {
+    void deleteWithUserNotExistThrowsException() {
         doThrow(EmptyResultDataAccessException.class)
                 .when(userRepository)
                 .deleteById(1L);
@@ -214,7 +214,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testValidateUserIdWithUserNotExistThrowsException() {
+    void validateUserIdWithUserNotExistThrowsException() {
         when(userRepository.existsById(1L))
                 .thenReturn(false);
 
