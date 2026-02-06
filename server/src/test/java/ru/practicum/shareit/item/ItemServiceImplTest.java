@@ -162,8 +162,6 @@ class ItemServiceImplTest {
                 .owner(user)
                 .build();
 
-        doNothing().when(userService)
-                .validateUserId(10L);
         when(itemRepository.findById(1L))
                 .thenReturn(Optional.of(item));
 
@@ -209,8 +207,6 @@ class ItemServiceImplTest {
                 .owner(wrongUser)
                 .build();
 
-        doNothing().when(userService)
-                .validateUserId(10L);
         when(itemRepository.findById(1L))
                 .thenReturn(Optional.of(item));
 
@@ -243,8 +239,6 @@ class ItemServiceImplTest {
                 .owner(user)
                 .build();
 
-        doNothing().when(userService)
-                .validateUserId(10L);
         when(itemRepository.findById(1L))
                 .thenReturn(Optional.of(item));
 
@@ -279,8 +273,8 @@ class ItemServiceImplTest {
                 .text("comment")
                 .build();
 
-        doNothing().when(userService).validateUserId(userId);
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(itemRepository.findById(itemId))
+                .thenReturn(Optional.of(item));
         when(commentRepository.findByItem_Id(itemId))
                 .thenReturn(List.of());
 
@@ -305,8 +299,8 @@ class ItemServiceImplTest {
         Long userId = 10L;
         Long itemId = 1L;
 
-        doNothing().when(userService).validateUserId(userId);
-        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+        when(itemRepository.findById(itemId))
+                .thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class,
                 () -> itemService.findById(userId, itemId));
@@ -354,7 +348,6 @@ class ItemServiceImplTest {
                 .text("text")
                 .build();
 
-        doNothing().when(userService).validateUserId(userId);
         when(itemRepository.findAllByOwnerId(userId))
                 .thenReturn(items);
         when(bookingRepository.findItemsLastBookings(anyList(), any()))
@@ -387,7 +380,6 @@ class ItemServiceImplTest {
     void findOwnersItemsWithNoItemsReturnsEmptyList() {
         Long userId = 1L;
 
-        doNothing().when(userService).validateUserId(userId);
         when(itemRepository.findAllByOwnerId(userId))
                 .thenReturn(List.of());
 
@@ -411,7 +403,6 @@ class ItemServiceImplTest {
                 .available(true)
                 .build();
 
-        doNothing().when(userService).validateUserId(userId);
         when(itemRepository.findAllByOwnerId(userId))
                 .thenReturn(List.of(item));
         when(bookingRepository.findItemsLastBookings(anyList(), any()))
@@ -445,7 +436,6 @@ class ItemServiceImplTest {
                 .item(item)
                 .build();
 
-        doNothing().when(userService).validateUserId(userId);
         when(itemRepository.findAllByOwnerId(userId))
                 .thenReturn(List.of(item));
         when(bookingRepository.findItemsLastBookings(anyList(), any()))
@@ -473,7 +463,6 @@ class ItemServiceImplTest {
                 .available(true)
                 .build();
 
-        doNothing().when(userService).validateUserId(userId);
         when(itemRepository.findByDescription(description))
                 .thenReturn(List.of(item));
 
@@ -492,8 +481,6 @@ class ItemServiceImplTest {
     void findByDescriptionWithNullDescriptionReturnsEmptyList() {
         Long userId = 1L;
 
-        doNothing().when(userService).validateUserId(userId);
-
         List<Item> result = itemService.findByDescription(userId, null);
 
         assertNotNull(result);
@@ -507,8 +494,6 @@ class ItemServiceImplTest {
     @Test
     void findByDescriptionWithBlankDescriptionReturnsEmptyList() {
         Long userId = 1L;
-
-        doNothing().when(userService).validateUserId(userId);
 
         List<Item> result = itemService.findByDescription(userId, "   ");
 
@@ -553,8 +538,8 @@ class ItemServiceImplTest {
                 .author(user)
                 .build();
 
-        doNothing().when(userService).validateUserId(userId);
-        when(itemRepository.existsById(itemId)).thenReturn(true);
+        when(itemRepository.existsById(itemId))
+                .thenReturn(true);
         when(bookingRepository.findByBookerIdAndItemId(userId, itemId))
                 .thenReturn(Optional.of(booking));
         when(commentRepository.save(any(Comment.class)))
@@ -570,12 +555,7 @@ class ItemServiceImplTest {
         verify(itemRepository).existsById(itemId);
         verify(bookingRepository).findByBookerIdAndItemId(userId, itemId);
         verify(commentRepository).save(any(Comment.class));
-        verifyNoMoreInteractions(
-                userService,
-                itemRepository,
-                bookingRepository,
-                commentRepository
-        );
+        verifyNoMoreInteractions(userService, itemRepository, bookingRepository, commentRepository);
     }
 
     @Test
@@ -586,8 +566,8 @@ class ItemServiceImplTest {
         IncomingCommentDto dto = new IncomingCommentDto();
         dto.setText("text");
 
-        doNothing().when(userService).validateUserId(userId);
-        when(itemRepository.existsById(itemId)).thenReturn(true);
+        when(itemRepository.existsById(itemId))
+                .thenReturn(true);
         when(bookingRepository.findByBookerIdAndItemId(userId, itemId))
                 .thenReturn(Optional.empty());
 
@@ -620,8 +600,8 @@ class ItemServiceImplTest {
         IncomingCommentDto dto = new IncomingCommentDto();
         dto.setText("text");
 
-        doNothing().when(userService).validateUserId(userId);
-        when(itemRepository.existsById(itemId)).thenReturn(true);
+        when(itemRepository.existsById(itemId))
+                .thenReturn(true);
         when(bookingRepository.findByBookerIdAndItemId(userId, itemId))
                 .thenReturn(Optional.of(booking));
 
@@ -651,8 +631,8 @@ class ItemServiceImplTest {
         IncomingCommentDto dto = new IncomingCommentDto();
         dto.setText("text");
 
-        doNothing().when(userService).validateUserId(userId);
-        when(itemRepository.existsById(itemId)).thenReturn(true);
+        when(itemRepository.existsById(itemId))
+                .thenReturn(true);
         when(bookingRepository.findByBookerIdAndItemId(userId, itemId))
                 .thenReturn(Optional.of(booking));
 
@@ -670,8 +650,8 @@ class ItemServiceImplTest {
         IncomingCommentDto dto = new IncomingCommentDto();
         dto.setText("text");
 
-        doNothing().when(userService).validateUserId(userId);
-        when(itemRepository.existsById(itemId)).thenReturn(false);
+        when(itemRepository.existsById(itemId))
+                .thenReturn(false);
 
         assertThrows(NotFoundException.class,
                 () -> itemService.createComment(userId, itemId, dto));
@@ -691,7 +671,8 @@ class ItemServiceImplTest {
                 .available(true)
                 .build();
 
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(itemRepository.findById(itemId))
+                .thenReturn(Optional.of(item));
 
         Item result = itemService.getById(itemId);
 
@@ -709,7 +690,8 @@ class ItemServiceImplTest {
     void getByIdWithNonExistingItemThrowsNotFoundException() {
         Long itemId = 1L;
 
-        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+        when(itemRepository.findById(itemId))
+                .thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> itemService.getById(itemId));
 

@@ -103,8 +103,6 @@ class ItemRequestServiceImplTest {
 
         List<ItemRequest> requests = List.of(request);
 
-        doNothing().when(userService)
-                .validateUserId(1L);
         when(itemRequestRepository.findByRequestorIdWithItems(1L))
                 .thenReturn(requests);
 
@@ -134,8 +132,6 @@ class ItemRequestServiceImplTest {
                 .items(List.of())
                 .build();
 
-        doNothing().when(userService)
-                .validateUserId(1L);
         when(itemRequestRepository.findByIdWithItems(10L))
                 .thenReturn(Optional.of(request));
 
@@ -153,8 +149,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getRequestByIdWithRequestNotExistThrowsException() {
-        doNothing().when(userService)
-                .validateUserId(1L);
         when(itemRequestRepository.findByIdWithItems(10L))
                 .thenReturn(Optional.empty());
 
@@ -184,8 +178,6 @@ class ItemRequestServiceImplTest {
 
         List<ItemRequestDto> requests = List.of(request1, request2);
 
-        doNothing().when(userService)
-                .validateUserId(1L);
         when(itemRequestRepository.findAllExceptUser(1L))
                 .thenReturn(requests);
 
