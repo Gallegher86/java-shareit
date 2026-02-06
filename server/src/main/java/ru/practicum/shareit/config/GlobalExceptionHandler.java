@@ -89,27 +89,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidArgumentException(MethodArgumentNotValidException ex) {
-        String errorMessage = "Выявлены ошибки валидации.";
-
-        List<String> errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .toList();
-
-        log.warn("Валидация не пройдена ({}): {}.", ex.getClass().getSimpleName(), errors);
-
-        ErrorResponse body = ErrorResponse.builder()
-                .error(errorMessage)
-                .errorCode(HttpStatus.BAD_REQUEST.value())
-                .details(errors)
-                .build();
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-    }
-
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ErrorResponse> handleMissingRequestedHeaderException(MissingRequestHeaderException ex) {
         String message = "В запросе отсутствует требуемый заголовок X-Sharer-User-Id.";
