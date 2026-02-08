@@ -48,7 +48,7 @@ public class BookingController {
     public List<BookingDto> getBookerBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
                                               @RequestParam(defaultValue = "ALL") BookingState state,
                                               @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                              @RequestParam(name = "size", required = false) Integer size) {
+                                              @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info("От пользователя с userId {} получен запрос на получение списка всех его бронирований.",
                 userId);
 
@@ -61,7 +61,7 @@ public class BookingController {
     public List<BookingDto> getOwnerBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
                                              @RequestParam(defaultValue = "ALL") BookingState state,
                                              @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                             @RequestParam(name = "size", required = false) Integer size) {
+                                             @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info("От владельца вещей с userId {} получен запрос на получение списка всех его бронирований.",
                 userId);
 
@@ -71,11 +71,6 @@ public class BookingController {
     }
 
     private Pageable makePageable(Integer from, Integer size) {
-        if (size == null) {
-            size = Integer.MAX_VALUE;
-            from = 0;
-        }
-
         return PageRequest.of(
                 from / size,
                 size,

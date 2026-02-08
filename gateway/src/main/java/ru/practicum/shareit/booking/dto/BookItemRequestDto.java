@@ -16,7 +16,7 @@ import ru.practicum.shareit.booking.validation.annotation.ValidBookingDates;
 @ValidBookingDates
 public class BookItemRequestDto {
 	@NotNull(message = "Id предмета для бронирования должен быть указан.")
-	private long itemId;
+	private Long itemId;
 
 	@NotNull(message = "Начало бронирования должно быть указано.")
 	@FutureOrPresent(message = "Начало бронирования не может быть в прошлом.")

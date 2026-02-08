@@ -37,6 +37,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        String message = "В запросе на бронирование получено не существующее значение параметра state. " + ex.getMessage();
+        log.warn(message);
+
+        ErrorResponse body = ErrorResponse.builder()
+                .error(message)
+                .errorCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ErrorResponse> handleMissingRequestedHeaderException(MissingRequestHeaderException ex) {
         String message = "В запросе отсутствует требуемый заголовок X-Sharer-User-Id.";
